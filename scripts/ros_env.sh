@@ -32,8 +32,10 @@ setup_ros_workspace() {
 
     source_with_nounset_disabled /opt/ros/humble/setup.bash
 
-    if [ ! -f install/setup.bash ]; then
-        echo "Workspace is not built yet. Run: ${BUILD_HINT}" >&2
+    if [ ! -f install/setup.bash ] ||
+       { [ ! -f install/rl_sar/share/rl_sar/local_setup.bash ] &&
+         [ ! -f install/share/rl_sar/local_setup.bash ]; }; then
+        echo "Workspace is not built at its current location. Run: ${BUILD_HINT}" >&2
         return 1
     fi
 

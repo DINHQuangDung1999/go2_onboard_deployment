@@ -1,5 +1,8 @@
 # Go2 IsaacLab No-Lin-Vel Policy Progress
 
+Historical notes for an earlier policy. Use the [workspace README](../README.md)
+for current deployment commands.
+
 This file tracks the work done to prepare a new IsaacLab policy that is safer to deploy toward the real Unitree Go2.
 
 ## Project Goal

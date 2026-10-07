@@ -1,5 +1,9 @@
 # Go2 Policy Run Guide
 
+Historical policy and fault-test procedures. Policy names, onboard paths, and
+build commands in this guide may differ from the current checkout; use the
+[workspace README](../README.md) for current startup commands.
+
 This guide shows how to run the four retained policies in Gazebo and on the
 real Go2. It covers deployment only. IsaacLab training is maintained in the
 separate IsaacLab workspace.

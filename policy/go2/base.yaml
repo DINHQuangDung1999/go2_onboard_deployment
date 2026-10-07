@@ -1,5 +1,5 @@
 go2:
-  policy_config_name: "model999"
+  policy_config_name: "benchmarkv8.4mlp"
   fault_policy_switch_enabled: false
   # Optional fault-recovery / contact experiments. Keep these disabled in the
   # clean default deployment unless the related policy folders and scripts are included.
