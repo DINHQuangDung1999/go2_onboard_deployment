@@ -189,7 +189,7 @@ is_onnxruntime_valid() {
     fi
     if [ "${OS_TYPE}" = "Linux" ]; then
         local runtime_arch
-        runtime_arch="$(file -b "$runtime_library")"
+        runtime_arch="$(file -Lb "$runtime_library")"
         case "${ARCH_TYPE}:${runtime_arch}" in
             x86_64:*x86-64*|aarch64:*aarch64*) ;;
             *) return 1 ;;

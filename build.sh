@@ -6,6 +6,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 # Load common utilities
 source "${SCRIPT_DIR}/scripts/common.sh"
+cd "${SCRIPT_DIR}"
 
 # ========================
 # Configuration
@@ -23,7 +24,7 @@ setup_inference_runtime() {
 
     if [ -f "$DOWNLOAD_SCRIPT" ]; then
         print_info "Checking inference libraries..."
-        bash "$DOWNLOAD_SCRIPT" || {
+        bash "$DOWNLOAD_SCRIPT" "${INFERENCE_RUNTIME:-${1:-all}}" || {
             print_error "Failed to setup inference libraries"
             exit 1
         }
@@ -85,8 +86,9 @@ run_cmake_build() {
     print_warning "NOTE: CMake build is for hardware deployment only, not for simulation."
     print_separator
 
-    cmake src/rl_sar/ -B cmake_build -DUSE_CMAKE=ON
-    cmake --build cmake_build -j$(nproc 2>/dev/null || echo 4)
+    cmake src/rl_sar/ -B cmake_build -DUSE_CMAKE=ON -DUSE_MUJOCO=OFF \
+        -DCMAKE_BUILD_TYPE=Release -DPython3_EXECUTABLE=/usr/bin/python3
+    cmake --build cmake_build --parallel "${BUILD_JOBS:-2}"
 
     print_success "CMake build completed!"
 }
@@ -131,16 +133,12 @@ run_ros_build() {
         print_info "Building all packages..."
         colcon build --merge-install --symlink-install \
             --cmake-args -DPython3_EXECUTABLE=/usr/bin/python3 \
-            -DPYTHON_EXECUTABLE=/usr/bin/python3 \
-            -DPYTHON_INCLUDE_DIR=/usr/include/python3.10 \
-            -DPYTHON_LIBRARY=/usr/lib/x86_64-linux-gnu/libpython3.10.so
+            -DPYTHON_EXECUTABLE=/usr/bin/python3
     else
         print_info "Building specific packages: $package_list"
         colcon build --merge-install --symlink-install --packages-select $package_list \
             --cmake-args -DPython3_EXECUTABLE=/usr/bin/python3 \
-            -DPYTHON_EXECUTABLE=/usr/bin/python3 \
-            -DPYTHON_INCLUDE_DIR=/usr/include/python3.10 \
-            -DPYTHON_LIBRARY=/usr/lib/x86_64-linux-gnu/libpython3.10.so
+            -DPYTHON_EXECUTABLE=/usr/bin/python3
     fi
 
     print_success "ROS build completed!"
@@ -311,6 +309,9 @@ show_usage() {
     echo -e "  -mj,--mujoco     Build with MuJoCo simulator support (CMake only)"
     echo -e "  -h, --help       Show this help message"
     echo ""
+    echo "Hardware build defaults: ONNX only, Release, 2 jobs."
+    echo "Overrides: INFERENCE_RUNTIME=onnx|libtorch|all BUILD_JOBS=2"
+    echo ""
     echo -e "${COLOR_INFO}Examples:${COLOR_RESET}"
     echo -e "  $0                    # Build all ROS packages"
     echo -e "  $0 package1 package2  # Build specific ROS packages"
@@ -350,7 +351,7 @@ main() {
 
     # Handle CMake build mode
     if [ "$cmake_mode" = true ]; then
-        setup_inference_runtime
+        setup_inference_runtime onnx
         run_cmake_build
         exit 0
     fi

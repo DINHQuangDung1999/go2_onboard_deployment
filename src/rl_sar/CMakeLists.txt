@@ -18,7 +18,7 @@ endif()
 if(NOT USE_CMAKE)
     add_compile_definitions(USE_ROS2)
 else()
-    message(WARNING "ROS_DISTRO not set, assuming non-ROS mode")
+    message(STATUS "Standalone build (USE_CMAKE=ON)")
     add_compile_definitions(USE_CMAKE)
 endif()
 
@@ -164,7 +164,7 @@ if(EXISTS "${LIBTORCH_DIR}/include" AND EXISTS "${LIBTORCH_DIR}/lib")
         message(WARNING "LibTorch found but find_package(Torch) failed")
     endif()
 else()
-    message(WARNING "LibTorch not found. Please run: bash download_inference_runtime.sh libtorch")
+    message(STATUS "LibTorch not installed; TorchScript backend disabled")
 endif()
 
 # RPATH Configuration for inference libraries
